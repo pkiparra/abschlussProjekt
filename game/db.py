@@ -17,14 +17,12 @@ def create_connection():
 
     return connection
 
-
 def create_table(connection, create_table_sql):
     try:
         cur = connection.cursor()
         cur.execute(create_table_sql)
     except Error as e:
         print(e)
-
 
 def setup_db():
     users_table = """ CREATE TABLE IF NOT EXISTS users (
@@ -59,6 +57,29 @@ def setup_db():
     else:
         print("Error! cannot create the database connection.")
 
+def is_username_available(username: str) -> bool:
+    sql = '''SELECT COUNT(*) FROM users WHERE username LIKE ?'''
+
+    try:   
+        conn = create_connection()
+        cur = conn.cursor()
+        cur.execute(sql, (username,))
+        conn.commit()
+        print("checked in database if user already exists")
+        result = cur.fetchone()
+        print("result", result)
+        cur.close()
+        if result[0] == 0:
+            return True
+        else:
+            return False
+    except Error as e:
+        print("Error while chekcing in db if user already exists:", e)
+        return None
+    finally:
+        if conn:
+            conn.close()
+            print("database connection closed ")
 def create_user(username: str, password: str) -> int:
     sql = ''' INSERT INTO users(username, password)
               VALUES(?,?) '''
