@@ -27,18 +27,17 @@ def create_table(connection, create_table_sql):
 
 def setup_db():
     users_table = """ CREATE TABLE IF NOT EXISTS users (
-                                        id integer PRIMARY KEY,
-                                        username text NOT NULL,
+                                        username text PRIMARY KEY,
                                         password text NOT NULL
                                     ); """
 
     leaderboard_table = """CREATE TABLE IF NOT EXISTS leaderboard (
                                     username text NOT NULL,
                                     game TEXT NOT NULL,
-                                    wins integer,
-                                    losses integer,
-                                    user_id integer,
-                                    FOREIGN KEY(user_id) REFERENCES users(id)
+                                    difficulty integer NOT NULL,
+                                    wins integer NOT NULL,
+                                    losses integer NOT NULL,
+                                    FOREIGN KEY(username) REFERENCES users(username)
                                 );"""
 
     # create a database connection
@@ -83,7 +82,7 @@ def is_username_available(username: str) -> bool:
             conn.close()
             print("database connection closed ")
 
-def create_user(username: str, password: str) -> int:
+def create_user(username: str, password: str):
     sql = ''' INSERT INTO users(username, password)
               VALUES(?,?) '''
     print(f'trying to register new user with username {username} in database')        
@@ -96,8 +95,6 @@ def create_user(username: str, password: str) -> int:
         print("new User registered in database")
 
         cur.close()
-        
-        return cur.lastrowid
     except Error as e:
         print("Error writing new User in database:", e)
     finally:
@@ -126,4 +123,61 @@ def get_password_for_user(username: str) -> str:
             conn.close()
             print("database connection closed ")
 
+def user_played_game_before(username: str, game: str, difficulty: int) -> bool:
+    sql = '''SELECT count(*) FROM leaderboard WHERE username = ? and game = ? and difficulty = ?'''
+    print(f'Trying to check if {username} played {game} at difficulty {difficulty} before in db')
 
+    try:   
+        conn = create_connection()
+        cur = conn.cursor()
+        cur.execute(sql, (username, game, difficulty))
+        conn.commit()
+        print("got result from db")
+        result = cur.fetchone()
+        cur.close()
+        print(result[0])
+        if result[0]:
+            print(f'found entries of {username} playing {game} before')
+            return True
+        else:
+            print(f'found no matching entry of {username} playing {game} before') 
+            return False
+    except Error as e:
+        print("Error while checking if user played game before:", e)
+        return None
+    finally:
+        if conn:
+            conn.close()
+            print("database connection closed ")
+
+def write_game_result_in_db(username: str, game: str, difficulty: int, userWon: bool):
+    if user_played_game_before(username, game, difficulty):
+        if userWon: 
+            sql = '''UPDATE leaderboard SET wins = wins + 1 WHERE username = ? and game = ? and difficulty = ?'''
+        else:
+            sql = '''UPDATE leaderboard SET losses = losses + 1 WHERE username = ? and game = ? and difficulty = ?'''
+    else:
+        if userWon: 
+            sql = '''INSERT INTO leaderboard(username, game, difficulty, wins, losses)
+                    Values(?,?,?,1,0)'''
+        else:
+            sql = '''INSERT INTO leaderboard(username, game, difficulty, wins, losses)
+                    Values(?,?,?,0,1)'''
+    try:  
+        print(f'Trying to update leaderboard for {username} who played {game} at difficulty {difficulty} in db') 
+        conn = create_connection()
+        cur = conn.cursor()
+        cur.execute(sql, (username, game, difficulty))
+        conn.commit()
+        print("uodated db")
+        cur.close()
+    except Error as e:
+        print("Error while updating leaderboard:", e)
+        return None
+    finally:
+        if conn:
+            conn.close()
+            print("database connection closed ")
+
+    
+    
