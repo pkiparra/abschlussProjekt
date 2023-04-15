@@ -13,7 +13,7 @@ def create_connection():
         print("databse connection established")
         return connection
     except Error as e:
-        print(e)
+        print("Could not create database connection: ", e)
 
     return connection
 
@@ -21,8 +21,9 @@ def create_table(connection, create_table_sql):
     try:
         cur = connection.cursor()
         cur.execute(create_table_sql)
+        cur.close()
     except Error as e:
-        print(e)
+        print("Error while checking if table exists / creating database:", e)
 
 def setup_db():
     users_table = """ CREATE TABLE IF NOT EXISTS users (
@@ -58,20 +59,21 @@ def setup_db():
         print("Error! cannot create the database connection.")
 
 def is_username_available(username: str) -> bool:
-    sql = '''SELECT COUNT(*) FROM users WHERE username LIKE ?'''
+    sql = '''SELECT COUNT(*) FROM users WHERE username = ?'''
+    print(f'checking in database if username: {username} is available')
 
     try:   
         conn = create_connection()
         cur = conn.cursor()
         cur.execute(sql, (username,))
         conn.commit()
-        print("checked in database if user already exists")
         result = cur.fetchone()
-        print("result", result)
         cur.close()
         if result[0] == 0:
+            print("found no match for username")
             return True
         else:
+            print("username already exists")
             return False
     except Error as e:
         print("Error while chekcing in db if user already exists:", e)
@@ -80,9 +82,12 @@ def is_username_available(username: str) -> bool:
         if conn:
             conn.close()
             print("database connection closed ")
+
 def create_user(username: str, password: str) -> int:
     sql = ''' INSERT INTO users(username, password)
               VALUES(?,?) '''
+    print(f'trying to register new user with username {username} in database')        
+
     try:
         conn = create_connection()
         cur = conn.cursor()
@@ -99,4 +104,26 @@ def create_user(username: str, password: str) -> int:
         if conn:
             conn.close()
             print("databse connection closed")
+
+def get_password_for_user(username: str) -> str:
+    sql = '''SELECT password FROM users WHERE username = ? '''
+    print(f'Trying to get password for {username} from databse')
+
+    try:   
+        conn = create_connection()
+        cur = conn.cursor()
+        cur.execute(sql, (username,))
+        conn.commit()
+        print("got password from database")
+        result = cur.fetchone()
+        cur.close()
+        return result[0]
+    except Error as e:
+        print("Error while getting password from db:", e)
+        return None
+    finally:
+        if conn:
+            conn.close()
+            print("database connection closed ")
+
 
