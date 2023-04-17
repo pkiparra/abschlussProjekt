@@ -180,4 +180,23 @@ def write_game_result_in_db(username: str, game: str, difficulty: int, userWon: 
             print("database connection closed ")
 
     
-    
+def get_leader_board(game: str, difficulty: int) -> list[tuple[str, int, int]]:
+    sql = '''SELECT username, wins, losses FROM leaderboard WHERE game = ? and difficulty = ? ORDER BY (wins - losses) DESC'''
+    print(f'Trying to get leaderboard for {game} at difficulty {difficulty} from db')
+
+    try:   
+        conn = create_connection()
+        cur = conn.cursor()
+        cur.execute(sql, (game, difficulty))
+        conn.commit()
+        print("got result from db")
+        result = cur.fetchall()
+        cur.close()
+        return result
+    except Error as e:
+        print("Error while getting leaderboard from db", e)
+        return None
+    finally:
+        if conn:
+            conn.close()
+            print("database connection closed ")
