@@ -89,12 +89,13 @@ class Board:
     def isPieceOnSquare(self, square):
         return square.occupyingPiece is not None
 
-    def isValidMove(self, piece, targetSquare): 
+    def isValidMove(self, piece, targetSquare):
+        # Ignore this
         """
             diff = []
 
-            for i in range(len(target)):
-                diff.append(target[i] - self.selectedPiece.pos[i])
+            for i in range(len(targetSquare)):
+                diff.append(targetSquare[i] - piece.pos[i])
 
             move = tuple(diff)
         """
