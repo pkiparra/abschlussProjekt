@@ -1,7 +1,8 @@
-import pygame, start_app_view
+import pygame, start_app_view, app_backend
 from ui_elements.Colors import Colors
 from ui_elements.Button import Button
 from ui_elements.TextImput import TextInput
+from ui_elements.Error import Error
 
 pygame.init()
 
@@ -10,7 +11,6 @@ TEXT_AND_BUTTON_HEIGHT = 50
 TEXT_AND_BUTTON_SPACING = 50
 
 headline_font = pygame.font.SysFont(None, 64)
-button_font = pygame.font.SysFont(None, 32)
 headline_text = "Ai mini games"
 button_text = "Als Gast spielen"
 text_input_titles = ["username", "Passwort", "Passwort wiederholen"]
@@ -45,7 +45,15 @@ def draw_view(screen):
                 for button in buttons:
                     if button.was_clicked(event):
                         if button.title == "Registrieren":
-                            print("hat geklappt")
+                            try:
+                                app_backend.register_user([imput.text for imput in input_fields])
+                                #TODO weiterleiten auf hauptbildschirm
+                            except Exception as e:
+                                y = SCREEN_HEIGHT - TEXT_AND_BUTTON_HEIGHT - 150
+                                error = Error(0, y, 600, TEXT_AND_BUTTON_HEIGHT, str(e))
+                                error.draw(screen)
+                        elif button.title == "<":
+                            start_app_view.start_app()
             for input in input_fields:
                 input.handle_event(event)
         for button in buttons:                    

@@ -5,4 +5,5 @@ class Colors:
     BUTTON_HOVER_COLOR = (0, 230, 118)
     BUTTON_TEXT_COLOR = (255, 255, 255)
     HEADLINE_COLOR = (33, 33, 33)
+    ERROR_COLOR = (232, 23, 23)
 
