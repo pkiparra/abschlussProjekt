@@ -28,8 +28,16 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and board.turn == "white":
                 board.handleClick(event.button, mx, my)
+            
+            if board.turn == "black":
+                if board.getStatus() != "continue":
+                    break
+
+                (beta, bestAction) = board.alphaBetaMinimax("black", -1000000, 1000000, 4)
+                board.makeMove(bestAction[0], bestAction[1], False)
+                board.turn = "white"
 
         status = board.getStatus()
         if status != "continue":

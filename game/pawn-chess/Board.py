@@ -64,7 +64,12 @@ class Board:
         return output
 
     def getSquareFromPos(self, pos):
-        return self.squares[pos[1] * 6 + pos[0]]
+        index = pos[1] * 6 + pos[0]
+
+        if index >= len(self.squares) or index < 0:
+            return None
+
+        return self.squares[index]
 
     def getPieceFromPos(self, pos):
         return self.getSquareFromPos(pos).occupyingPiece
@@ -99,6 +104,9 @@ class Board:
 
             move = tuple(diff)
         """
+
+        if targetSquare == None:
+            return False
 
         move = tuple(x - y for x, y in zip(targetSquare.pos, piece.pos))
 
@@ -141,13 +149,15 @@ class Board:
 
             square.highlight = self.isValidMove(self.selectedPiece, square)
 
-    def makeMove(self, piece, targetSquare):
+    def makeMove(self, piece, targetSquare, isAI):
         sourceSquare = self.getSquareFromPos(piece.pos)
         sourceSquare.occupyingPiece = None
         targetSquare.occupyingPiece = piece
 
         piece.pos = targetSquare.pos
-        piece.hasMoved = True
+
+        if not isAI:
+            piece.hasMoved = True
 
     def handleClick(self, button, mx, my):
         x = mx // self.tileWidth
@@ -173,7 +183,7 @@ class Board:
                 self.selectedPiece = None
             elif button == BUTTON_MOUSE_LEFT:
                 if self.isValidMove(self.selectedPiece, clickedSquare):
-                    self.makeMove(self.selectedPiece, clickedSquare)
+                    self.makeMove(self.selectedPiece, clickedSquare, False)
                     self.selectedPiece.setActive(False)
                     self.selectedPiece = None
                     self.turn = "black" if self.turn == "white" else "white"
@@ -228,3 +238,89 @@ class Board:
                     return "continue"
                 
         return "draw"
+
+    def evaluate(self, isEnemy):
+        # Heuristic:
+        # * +1 for white piece, -1 for black piece
+        # * Distance to goal: How close are all pieces to the last row
+
+        pawnTable = [
+            [100, 100, 100, 100, 100, 100],
+            [50, 50, 50, 50, 50, 50],
+            [20, 20, 20, 20, 20, 20],
+            [10, 10, 10, 10, 10, 10],
+            [5, 5, 5, 5, 5, 5],
+            [0, 0, 0, 0, 0, 0]
+        ]
+
+        pieces = self.getAllPieces()
+
+        whitePieces = [p for p in pieces if p.color == "white"]
+        blackPieces = [p for p in pieces if p.color == "black"]
+
+        value = len(whitePieces) - len(blackPieces)
+
+        for pawn in blackPieces:
+            value += pawnTable[pawn.pos[1]][pawn.pos[0]]
+
+        return value
+
+    def alphaBetaMinimax(self, player, alpha, beta, depth):
+        if depth == 0:
+            return (self.evaluate(True), None) if player == "white" else (-self.evaluate(False), None)
+        
+        pieces = [p for p in self.getAllPieces() if p.color == player]
+        bestAction = None
+
+        for piece in pieces:
+            moves = piece.getMoves()
+
+            for move in moves:
+                targetPos = (piece.pos[0] + move[0], piece.pos[1] + move[1])
+                prevSquare = self.getSquareFromPos(piece.pos)
+                targetSquare = self.getSquareFromPos(targetPos)
+
+                if targetSquare == None or not self.isValidMove(piece, targetSquare):
+                    continue
+
+                action = (piece, targetSquare)
+                bestAction = action
+                nextPlayer = "black" if player == "white" else "white"
+
+                # prevPawn -> targetSquare
+                # if there is a pawn, targetPawn -> None
+                prevPawn = None
+                if targetSquare.occupyingPiece:
+                    prevPawn = targetSquare.occupyingPiece
+
+                # Make the move
+                self.makeMove(piece, targetSquare, True)
+
+                (score, _) = self.alphaBetaMinimax(nextPlayer, alpha, beta, depth - 1)
+
+                # Undo the move
+                # 1. Move piece back into original position
+                prevSquare.occupyingPiece = piece
+                piece.pos = prevSquare.pos
+                targetSquare.occupyingPiece = None
+
+                # 2. If the move killed an enemy pawn, reinstate that pawn
+                if prevPawn:
+                    targetSquare.occupyingPiece = prevPawn
+                    prevPawn.pos = targetSquare.pos
+
+                if player == "white":
+                    if score >= beta:
+                        return (beta, None)
+                    
+                    if score > alpha:
+                        alpha = score
+                else:
+                    if score <= alpha:
+                        return (alpha, action)
+                
+                    if score < beta:
+                        beta = score
+                        bestAction = action
+        
+        return (alpha, None) if player == "white" else (beta, bestAction)
