@@ -1,4 +1,4 @@
-import pygame, registration_view
+import pygame, registration_view, login_View
 
 from ui_elements.Button import Button
 from ui_elements.Colors import Colors
@@ -41,6 +41,8 @@ def start_app():
                     if button.was_clicked(event):
                         if button.title == "Registrieren":
                             registration_view.draw_view(screen)
+                        if button.title == "Login":
+                            login_View.draw_view(screen)
         for button in buttons:                    
             button.draw(screen, pygame.mouse.get_pos())
 

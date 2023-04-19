@@ -115,7 +115,7 @@ def get_password_for_user(username: str) -> str:
         result = cur.fetchone()
         cur.close()
         return result[0]
-    except Error as e:
+    except (Error, TypeError) as e:
         print("Error while getting password from db:", e)
         return None
     finally:
