@@ -1,3 +1,4 @@
 
 game/__pycache__/
+game/ui_elements/__pycache__/
 *.db
