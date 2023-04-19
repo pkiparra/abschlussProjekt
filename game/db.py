@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from sqlite3 import Error
+from classes import Difficulty
 
 def create_connection():
     absolute_path = os.path.dirname(__file__)
@@ -34,7 +35,7 @@ def setup_db():
     leaderboard_table = """CREATE TABLE IF NOT EXISTS leaderboard (
                                     username text NOT NULL,
                                     game TEXT NOT NULL,
-                                    difficulty integer NOT NULL,
+                                    difficulty TEXT NOT NULL,
                                     wins integer NOT NULL,
                                     losses integer NOT NULL,
                                     FOREIGN KEY(username) REFERENCES users(username)
@@ -127,14 +128,14 @@ def get_password_for_user(username: str) -> str:
             conn.close()
             print("database connection closed ")
 
-def user_played_game_before(username: str, game: str, difficulty: int) -> bool:
+def user_played_game_before(username: str, game: str, difficulty: Difficulty) -> bool:
     sql = '''SELECT count(*) FROM leaderboard WHERE username = ? and game = ? and difficulty = ?'''
-    print(f'Trying to check if {username} played {game} at difficulty {difficulty} before in db')
+    print(f'Trying to check if {username} played {game} at difficulty {difficulty.value} before in db')
 
     try:   
         conn = create_connection()
         cur = conn.cursor()
-        cur.execute(sql, (username, game, difficulty))
+        cur.execute(sql, (username, game, difficulty.value))
         conn.commit()
         print("got result from db")
         result = cur.fetchone()
@@ -154,7 +155,7 @@ def user_played_game_before(username: str, game: str, difficulty: int) -> bool:
             conn.close()
             print("database connection closed ")
 
-def write_game_result_in_db(username: str, game: str, difficulty: int, userWon: bool):
+def write_game_result_in_db(username: str, game: str, difficulty: Difficulty, userWon: bool):
     if user_played_game_before(username, game, difficulty):
         if userWon: 
             sql = '''UPDATE leaderboard SET wins = wins + 1 WHERE username = ? and game = ? and difficulty = ?'''
@@ -168,10 +169,10 @@ def write_game_result_in_db(username: str, game: str, difficulty: int, userWon: 
             sql = '''INSERT INTO leaderboard(username, game, difficulty, wins, losses)
                     Values(?,?,?,0,1)'''
     try:  
-        print(f'Trying to update leaderboard for {username} who played {game} at difficulty {difficulty} in db') 
+        print(f'Trying to update leaderboard for {username} who played {game} at difficulty {difficulty.value} in db') 
         conn = create_connection()
         cur = conn.cursor()
-        cur.execute(sql, (username, game, difficulty))
+        cur.execute(sql, (username, game, difficulty.value))
         conn.commit()
         print("uodated db")
         cur.close()

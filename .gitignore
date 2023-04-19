@@ -1,4 +1,6 @@
 
 game/__pycache__/
 game/ui_elements/__pycache__/
+game/pawn-chess/__pycache__/
+
 *.db

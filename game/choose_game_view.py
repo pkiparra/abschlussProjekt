@@ -71,7 +71,7 @@ def draw_view(screen: pygame.Surface, user: User):
                         if button.title == Button_types.LEADERBOARD_PAWN_CHESS:
                             Leaderboard.draw_view(screen, user)
                         if button.title == Button_types.START_TIC_TAC_TOE:
-                            TicTacToe.draw_view()
+                            app_backend.play_tic_tac_toe(screen, user)
 
         for button in buttons: 
             if isinstance(button, Stay_clicked_button):

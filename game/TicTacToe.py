@@ -7,7 +7,7 @@ import math
 import tkinter as regeln
 import tkinter.font as tkFont
 
-
+winner: str = None
 
 #Draw Board
 def draw_board(board):
@@ -137,7 +137,10 @@ def update_break(element):
 
 #Game Ende Pop-Up
 def finish(element):
+    popup(element)
     pygame.display.update()
+    global winner
+    winner= element
 
 # Checkt ob move Valide ist und gibt an welcher Spieler dran ist.
 def validMove(boardlist,player,x,y):
@@ -176,7 +179,8 @@ boardlist = np.array([
             ['-', '-', '-', '-', '-', '-'],
             ['-', '-', '-', '-', '-', '-']])
 
-def draw_view():
+
+def draw_view() -> bool:
     bg_img = pygame.image.load('game/Images/BG_tic.png')
     bg_img = pygame.transform.scale(bg_img,(SCREEN_WIDTH,SCREEN_HEIGHT))
     screen.blit(bg_img, (0, 0))
@@ -217,3 +221,8 @@ def draw_view():
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
+        if winner:
+            if winner == "X":
+                return True
+            else:
+                return False

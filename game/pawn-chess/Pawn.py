@@ -7,7 +7,7 @@ class Pawn:
         self.color = color
         self.tileSize = tileSize
         self.hasMoved = False
-        self.sprite = self.loadSprite(f"sprites/{color}/pawn.png")
+        self.sprite = self.loadSprite(f"game/pawn-chess/sprites/{color}/pawn.png")
         self.originalSprite = self.sprite.copy()
 
     def loadSprite(self, path):
@@ -25,6 +25,6 @@ class Pawn:
 
     def setActive(self, active):
         if active:
-            self.sprite = self.loadSprite("sprites/piece_selected.png")
+            self.sprite = self.loadSprite("game/pawn-chess/sprites/piece_selected.png")
         else:
             self.sprite = self.originalSprite

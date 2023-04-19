@@ -1,5 +1,6 @@
 import db
-from classes import User
+from classes import User, Game
+import TicTacToe, choose_game_view
 
 def register_user(user_inputs) -> User:
     username = user_inputs[0]
@@ -34,3 +35,8 @@ def login_user(user_inputs) -> User:
             raise Exception("Username oder Passwort Falsch!")
     else:
          raise Exception("Username oder Passwort Falsch!")
+    
+def play_tic_tac_toe (screen, user: User):
+    userWon = TicTacToe.draw_view()
+    db.write_game_result_in_db(user.username, Game.TIC_TAC_TOE.value, user.difficulty, userWon)
+    choose_game_view.draw_view(screen, user)
