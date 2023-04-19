@@ -12,7 +12,7 @@ def draw_board(board):
     for row in range(6):
         for col in range(6):
             if board[row][col] == 'X':
-                screen.blit(p1_img, ((col * 100) + 13 , (row * 100) + 10))
+                screen.blit(p1_img, ((col * 100) + 15 , (row * 100) + 12))
 
             elif board[row][col] == 'O':
                 screen.blit(p2_img, ((col * 100) + 11 , (row * 100) + 10))
