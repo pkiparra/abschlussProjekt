@@ -11,6 +11,3 @@ class User:
         self.difficulty: Difficulty = Difficulty.EASY
         self.username = username
     
-class Winner(Enum): 
-    USER = "user"
-    AI = "ai"
