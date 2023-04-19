@@ -3,8 +3,8 @@ import numpy as np
 import ctypes
 import pygame
 from pygame.locals import *
-import math
-from tkinter import messagebox
+#import math
+#from tkinter import messagebox
 
 
 #Draw Board
