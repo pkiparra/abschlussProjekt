@@ -14,7 +14,7 @@ headline_font = pygame.font.SysFont(None, 64)
 headline_text = "Ai mini games"
 text_input_titles = ["username", "Passwort"]
 
-def draw_view(screen):
+def draw_view(screen: pygame.Surface):
     SCREEN_WIDTH = screen.get_width()
     SCREEN_HEIGHT = screen.get_height()
 

@@ -1,4 +1,4 @@
-import pygame, start_app_view, app_backend
+import pygame, start_app_view, app_backend, Leaderboard
 from ui_elements.Colors import Colors
 from ui_elements.Button import Button
 from ui_elements.Stay_clicked_button import Stay_clicked_button
@@ -12,12 +12,12 @@ TEXT_AND_BUTTON_HEIGHT = 50
 TEXT_AND_BUTTON_SPACING = 50
 
 headline_font = pygame.font.SysFont(None, 64)
-choose_difficulty_font = pygame.font.SysFont(None, 25)
+small_texts_font = pygame.font.SysFont(None, 25)
 headline_text = "Ai mini games"
 choose_difficulty_text = "Gamemode wählen:"
 text_input_titles = ["username", "Passwort"]
 
-def draw_view(screen, user: User):
+def draw_view(screen: pygame.Surface, user: User):
     print(f'{user.username} logged in')
 
     SCREEN_WIDTH = screen.get_width()
@@ -38,9 +38,17 @@ def draw_view(screen, user: User):
     headline_rect = headline_surface.get_rect(center=(SCREEN_WIDTH // 2, 50))
     screen.blit(headline_surface, headline_rect)
     
-    choose_difficulty_surface = choose_difficulty_font.render(choose_difficulty_text, True, Colors.HEADLINE_COLOR)
-    choose_difficulty_rect = headline_surface.get_rect(center=(SCREEN_WIDTH // 2, 115))
+    choose_difficulty_surface = small_texts_font.render(choose_difficulty_text, True, Colors.HEADLINE_COLOR)
+    choose_difficulty_rect = choose_difficulty_surface.get_rect(bottomleft=( 150, 110))
     screen.blit(choose_difficulty_surface, choose_difficulty_rect)
+
+    pawn_chess_surface = small_texts_font.render("Bauernschach", True, Colors.HEADLINE_COLOR)
+    pawn_chess_rect = pawn_chess_surface.get_rect(midbottom=(SCREEN_WIDTH * 0.25, 285))
+    screen.blit(pawn_chess_surface, pawn_chess_rect)
+
+    tic_tac_toe_surface = small_texts_font.render("TIC TAC TOE", True, Colors.HEADLINE_COLOR)
+    tic_tac_toe_rect = tic_tac_toe_surface.get_rect(midbottom=(SCREEN_WIDTH * 0.75, 285))
+    screen.blit(tic_tac_toe_surface, tic_tac_toe_rect)
 
     while True:
         for event in pygame.event.get():
@@ -58,6 +66,11 @@ def draw_view(screen, user: User):
                             user.difficulty = Difficulty.MEDIUM
                         if button.title == Button_types.GAMEMODE_HARD:
                             user.difficulty = Difficulty.HARD
+                        if button.title == Button_types.LEADERBOARD_PAWN_CHESS:
+                            Leaderboard.draw_view(screen, user)
+                        if button.title == Button_types.LEADERBOARD_PAWN_CHESS:
+                            Leaderboard.draw_view(screen, user)
+
         for button in buttons: 
             if isinstance(button, Stay_clicked_button):
                 button.draw(screen, pygame.mouse.get_pos(), user.difficulty.value)   
