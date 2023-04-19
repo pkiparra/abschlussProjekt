@@ -158,16 +158,13 @@ SCREEN_HEIGHT = 600
 
 # Fenster erstellen
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-bg_img = pygame.image.load('Images/BG_tic.png')
-bg_img = pygame.transform.scale(bg_img,(SCREEN_WIDTH,SCREEN_HEIGHT))
-pygame.display.set_caption('Tic Tac Toe 6x6')
+
 
 #Images
-screen.blit(bg_img, (0, 0))
-p1_img = pygame.image.load('Images/x_tic.png')
+p1_img = pygame.image.load('game/Images/x_tic.png')
 p1_img = pygame.transform.scale(p1_img, (75, 75))
 
-p2_img = pygame.image.load('Images/O_tic.png')
+p2_img = pygame.image.load('game/Images/O_tic.png')
 p2_img = pygame.transform.scale(p2_img, (80, 80))
 
 #Main Array
@@ -179,38 +176,44 @@ boardlist = np.array([
             ['-', '-', '-', '-', '-', '-'],
             ['-', '-', '-', '-', '-', '-']])
 
-player = 1
-count_draw = 0
-while True:
-    draw_board(boardlist)
-    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    for event in pygame.event.get():
+def draw_view():
+    bg_img = pygame.image.load('game/Images/BG_tic.png')
+    bg_img = pygame.transform.scale(bg_img,(SCREEN_WIDTH,SCREEN_HEIGHT))
+    screen.blit(bg_img, (0, 0))
+    
+    pygame.display.set_caption('Tic Tac Toe 6x6')
+    player = 1
+    count_draw = 0
+    while True:
+        draw_board(boardlist)
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        for event in pygame.event.get():
 
-        if event.type == MOUSEBUTTONDOWN:
-            if event.button == 1:
-                b = pygame.mouse.get_pos()
-                x = int(b[0] / 100)
-                y = int(b[1] / 100)
-                player = validMove(boardlist, player, x, y)
-                if count_draw == 36:
-                    draw_board(boardlist)
-                    pygame.display.update()
-                    popup('end')
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    b = pygame.mouse.get_pos()
+                    x = int(b[0] / 100)
+                    y = int(b[1] / 100)
+                    player = validMove(boardlist, player, x, y)
+                    if count_draw == 36:
+                        draw_board(boardlist)
+                        pygame.display.update()
+                        popup('end')
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:
-                create_popup()
-            if event.key == pygame.K_ESCAPE:
-                messageBox = ctypes.windll.user32.MessageBoxW
-                value = messageBox(None, 'Exit ? ',"Pause",0x70 | 0x2)
-                if value == 5:
-                    print('Nichts')
-                elif value == 4:
-                    print('Restart')
-                elif value == 3:
-                    print('Hauptmenu')
-        
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    pygame.display.update()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    create_popup()
+                if event.key == pygame.K_ESCAPE:
+                    messageBox = ctypes.windll.user32.MessageBoxW
+                    value = messageBox(None, 'Exit ? ',"Pause",0x70 | 0x2)
+                    if value == 5:
+                        print('Nichts')
+                    elif value == 4:
+                        print('Restart')
+                    elif value == 3:
+                        print('Hauptmenu')
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        pygame.display.update()

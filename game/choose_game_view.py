@@ -1,4 +1,4 @@
-import pygame, start_app_view, app_backend, Leaderboard
+import pygame, start_app_view, app_backend, Leaderboard, TicTacToe
 from ui_elements.Colors import Colors
 from ui_elements.Button import Button
 from ui_elements.Stay_clicked_button import Stay_clicked_button
@@ -70,6 +70,8 @@ def draw_view(screen: pygame.Surface, user: User):
                             Leaderboard.draw_view(screen, user)
                         if button.title == Button_types.LEADERBOARD_PAWN_CHESS:
                             Leaderboard.draw_view(screen, user)
+                        if button.title == Button_types.START_TIC_TAC_TOE:
+                            TicTacToe.draw_view()
 
         for button in buttons: 
             if isinstance(button, Stay_clicked_button):
