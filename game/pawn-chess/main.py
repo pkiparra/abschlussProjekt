@@ -1,4 +1,5 @@
 import pygame
+import pyautogui
 
 from Board import Board
 
@@ -27,6 +28,10 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]:
+                pyautogui.alert("Schwarz und Weiß beginnen beide mit sechs Bauern.\nJeder Bauer kann ein oder zwei Felder nach vorne ziehen, Letzteres falls sich dieser Bauer noch nicht zuvor bewegt hatte.\nZugleich kann jeder Bauer auf ein Feld, das sich diagonal vor ihm befindet, ziehen, falls dieses von einem gegnerischen Bauer besetzt ist, damit eliminiert er diesen Bauern.\n\nWenn alle Gegnerischen Bauern eliminiert sind oder ein Bauer die letzte Reihe erreicht, ist das Spiel für den Spieler dieser Farbe gewonnen.\nFalls eine Seite in ihrer Runde keinen Zug spielen kann, kommt es zu einem Unentschieden.", "Regeln des Bauernschachs", "Verstanden!")
 
             if event.type == pygame.MOUSEBUTTONDOWN and board.turn == "white":
                 board.handleClick(event.button, mx, my)

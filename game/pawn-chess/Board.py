@@ -95,15 +95,6 @@ class Board:
         return square.occupyingPiece is not None
 
     def isValidMove(self, piece, targetSquare):
-        # Ignore this
-        """
-            diff = []
-
-            for i in range(len(targetSquare)):
-                diff.append(targetSquare[i] - piece.pos[i])
-
-            move = tuple(diff)
-        """
 
         if targetSquare == None:
             return False
@@ -246,11 +237,11 @@ class Board:
 
         pawnTable = [
             [100, 100, 100, 100, 100, 100],
-            [50, 50, 50, 50, 50, 50],
-            [20, 20, 20, 20, 20, 20],
             [10, 10, 10, 10, 10, 10],
-            [5, 5, 5, 5, 5, 5],
-            [0, 0, 0, 0, 0, 0]
+            [8, 8, 8, 8, 8, 8],
+            [6, 6, 6, 6, 6, 6],
+            [4, 4, 4, 4, 4, 4],
+            [2, 2, 2, 2, 2, 2]
         ]
 
         pieces = self.getAllPieces()
