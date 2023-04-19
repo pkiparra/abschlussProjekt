@@ -239,7 +239,7 @@ class Board:
                 
         return "draw"
 
-    def evaluate(self, isEnemy):
+    def evaluate(self):
         # Heuristic:
         # * +1 for white piece, -1 for black piece
         # * Distance to goal: How close are all pieces to the last row
@@ -267,7 +267,7 @@ class Board:
 
     def alphaBetaMinimax(self, player, alpha, beta, depth):
         if depth == 0:
-            return (self.evaluate(True), None) if player == "white" else (-self.evaluate(False), None)
+            return (self.evaluate(), None) if player == "white" else (-self.evaluate(), None)
         
         pieces = [p for p in self.getAllPieces() if p.color == player]
         bestAction = None
