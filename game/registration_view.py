@@ -1,8 +1,9 @@
-import pygame, start_app_view, app_backend
+import pygame, start_app_view, app_backend, choose_game_view
 from ui_elements.Colors import Colors
 from ui_elements.Button import Button
 from ui_elements.TextImput import TextInput
 from ui_elements.Error import Error
+from ui_elements.Button_types import Button_types
 
 pygame.init()
 
@@ -12,7 +13,6 @@ TEXT_AND_BUTTON_SPACING = 50
 
 headline_font = pygame.font.SysFont(None, 64)
 headline_text = "Ai mini games"
-button_text = "Als Gast spielen"
 text_input_titles = ["username", "Passwort", "Passwort wiederholen"]
 
 def draw_view(screen):
@@ -26,10 +26,10 @@ def draw_view(screen):
         input_fields.append(TextInput(x, y, TEXT_AND_BUTTON_WIDTH, TEXT_AND_BUTTON_HEIGHT, text))
     
     buttons = []
-    buttons.append(Button(10, 10, 40, 40, "<"))
+    buttons.append(Button(10, 10, 40, 40, Button_types.BACK))
     x = SCREEN_WIDTH // 2 - (TEXT_AND_BUTTON_WIDTH - 50) // 2
     y = SCREEN_HEIGHT - TEXT_AND_BUTTON_HEIGHT - 30
-    buttons.append(Button(x, y, TEXT_AND_BUTTON_WIDTH - 50, TEXT_AND_BUTTON_HEIGHT, "Registrieren"))
+    buttons.append(Button(x, y, TEXT_AND_BUTTON_WIDTH - 50, TEXT_AND_BUTTON_HEIGHT, Button_types.SIGNUP))
 
     screen.fill(Colors.BACKGROUND_COLOR)
     headline_surface = headline_font.render(headline_text, True, Colors.HEADLINE_COLOR)
@@ -44,15 +44,15 @@ def draw_view(screen):
             elif event.type == pygame.MOUSEBUTTONDOWN:        
                 for button in buttons:
                     if button.was_clicked(event):
-                        if button.title == "Registrieren":
+                        if button.title == Button_types.SIGNUP:
                             try:
-                                app_backend.register_user([imput.text for imput in input_fields])
-                                #TODO weiterleiten auf hauptbildschirm
+                                user = app_backend.register_user([imput.text for imput in input_fields])
+                                choose_game_view.draw_view(screen, user)
                             except Exception as e:
-                                y = SCREEN_HEIGHT - TEXT_AND_BUTTON_HEIGHT - 150
+                                y = SCREEN_HEIGHT - TEXT_AND_BUTTON_HEIGHT - 110
                                 error = Error(0, y, 600, TEXT_AND_BUTTON_HEIGHT, str(e))
                                 error.draw(screen)
-                        elif button.title == "<":
+                        elif button.title == Button_types.BACK:
                             start_app_view.start_app()
             for input in input_fields:
                 input.handle_event(event)
